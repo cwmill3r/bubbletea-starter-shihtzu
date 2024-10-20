@@ -8,19 +8,18 @@ import (
 
 // Update handles messages and updates the main menu bubble
 func (m Model) Update(msg tea.Msg, keyMap keys.KeyMap) (Model, tea.Cmd) {
-	var cmds []tea.Cmd
-
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
-		case key.Matches(msg, keyMap.Up):
-			m.MoveUp()
-		case key.Matches(msg, keyMap.Down):
-			m.MoveDown()
-		case key.Matches(msg, keyMap.Select):
-			cmds = append(cmds, m.Select())
+		case key.Matches(msg, keyMap.Quit):
+			return m, tea.Quit
 		}
+	case tea.WindowSizeMsg:
+		h, v := docStyle.GetFrameSize()
+		m.list.SetSize(msg.Width-h, msg.Height-v)
 	}
 
-	return m, tea.Batch(cmds...)
+	var cmd tea.Cmd
+	m.list, cmd = m.list.Update(msg)
+	return m, cmd
 }
